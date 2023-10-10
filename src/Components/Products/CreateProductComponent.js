@@ -8,8 +8,6 @@ import {
     joinAllServerErrorMessages, setServerErrors,
     validateFormDataInputRequired
 } from "../../Utils/UtilsValidations"
-import ImgCrop from 'antd-img-crop';
-
 let CreateProductComponent = (props) => {
     let { openNotification } = props
 
@@ -18,29 +16,13 @@ let CreateProductComponent = (props) => {
     let [formErrors, setFormErrors] = useState({})
 
     let navigate = useNavigate();
-    const [fileList, setFileList] = useState([]);
-
-    const onPreview = async (file) => {
-        let src = file.url;
-        if (!src) {
-            src = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file.originFileObj);
-                reader.onload = () => resolve(reader.result);
-            });
-        }
-        const image = new Image();
-        image.src = src;
-        const imgWindow = window.open(src);
-        imgWindow?.document.write(image.outerHTML);
-    };
+    const [myFile, setMyFile]=useState()
 
     let uploadPhotos = async (productId) => {
+
         const formDataPhotos = new FormData();
 
-        fileList.forEach((file) => {
-            formDataPhotos.append('photos', file.originFileObj);
-        });
+        formDataPhotos.append('photos', myFile);
         formDataPhotos.append('productId', productId);
         
         let response = await fetch(backendURL + "/products/photos", {
@@ -82,15 +64,11 @@ let CreateProductComponent = (props) => {
         }
     }
 
-    const handleUpload = (info) => {
-        let fileList = [...info.fileList];
-    
-        // Ограничиваем количество загружаемых файлов, если нужно
-        //fileList = fileList.slice(-3);
-    
-        // Обновляем состояние списка файлов
-        setFileList(fileList);
-      };
+    let chageValueImage =(file)=>{
+        setMyFile(file)
+   
+    }
+
     return (
         <Row align="middle" justify="center" style={{ minHeight: "70vh" }}>
             <Col>
@@ -124,18 +102,10 @@ let CreateProductComponent = (props) => {
                     </Form.Item>
 
                     <Form.Item name="image">
-                        <ImgCrop rotationSlider>
-                            <Upload
-                                
-                                listType="picture-card"
-                                fileList={fileList}
-                                onChange={handleUpload}
-                                onPreview={onPreview}
-                            >
-                                {fileList.length < 5 && '+ Upload'}
+                            <Upload  action={ (file) => {chageValueImage(file)} }  listType="picture-card">
+                                Upload
                             </Upload>
-                        </ImgCrop>
-                    </Form.Item>
+                        </Form.Item>
 
                     {allowSubmitForm(formData, formErrors, requiredInForm) ?
                         <Button type="primary" onClick={clickCreateProduct} block >Sell Product</Button> :
