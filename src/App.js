@@ -104,8 +104,8 @@ let App = () => {
             { key: "menuIndex", label: <Link to="/">Index</Link> },
             { key: "menuCreateProduct", label: <Link to="/products/create">Sell</Link> },
             { key: "menuProducts", label: <Link to={"/products/"+localStorage.getItem("id")}>My products</Link> },
-            { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
             { key: "menuAllAnnouncements", label: <Link to="/announcements" >All announcements</Link> },
+            { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
           ]}>
           </Menu>
         }
