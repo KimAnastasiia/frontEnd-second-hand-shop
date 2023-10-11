@@ -1,4 +1,4 @@
-import { Card, Input, Button, Row, Col, Form, Typography  } from "antd";
+import { Card, Input, Button, Row, Col, Form, Typography, Upload  } from "antd";
 import { backendURL } from "../../Global";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ let EditProductComponent = (props) => {
     let { openNotification } = props
 
     const { id } = useParams();
-
+    const [myFile, setMyFile]=useState()
     let requiredInForm = ["title","description","price"]
     let [formData, setFormData] = useState({})
     let [formErrors, setFormErrors] = useState({})
@@ -23,7 +23,26 @@ let EditProductComponent = (props) => {
     useEffect(() => {
         getProduct();
     },[])
+    let uploadPhotos = async () => {
 
+        const formDataPhotos = new FormData();
+
+        formDataPhotos.append('photos', myFile);
+        formDataPhotos.append('productId', formData?.id);
+        
+        let response = await fetch(backendURL + "/products/photos", {
+            method: "POST",
+            headers: {
+                "apikey": localStorage.getItem("apiKey")
+            },
+            body: formDataPhotos
+        })
+        if (response.ok) {
+            let data = await response.json()
+            console.log(data)
+        }
+        
+    }
     let getProduct = async () => {
         let response = await fetch(backendURL+"/products/"+id,
         {
@@ -46,7 +65,10 @@ let EditProductComponent = (props) => {
         }
     }
  
-    
+    let chageValueImage =(file)=>{
+        setMyFile(file)
+   
+    }
     let clickEditProduct = async () => {
         let response = await fetch(backendURL+"/products/"+id,
         {
@@ -61,7 +83,8 @@ let EditProductComponent = (props) => {
         if ( response.ok ){
             let jsonData = await response.json();
             openNotification("top","Success modification", "success" )
-            navigate("/products")
+            uploadPhotos()
+            navigate("/products/"+localStorage.getItem("id"))
 
         } else {
             let responseBody = await response.json();
@@ -112,7 +135,11 @@ let EditProductComponent = (props) => {
 
                         { formErrors?.price?.msg && <Typography.Text type="danger"> {formErrors?.price?.msg} </Typography.Text>}
                     </Form.Item>
-
+                    <Form.Item name="image">
+                            <Upload  action={ (file) => {chageValueImage(file)} }  listType="picture-card">
+                                Upload
+                            </Upload>
+                        </Form.Item>
                     { allowSubmitForm(formData,formErrors,requiredInForm) ? 
                         <Button type="primary" onClick={clickEditProduct} block >Edit Product</Button> :
                         <Button type="primary" onClick={clickEditProduct} block disabled>Edit Product</Button>
