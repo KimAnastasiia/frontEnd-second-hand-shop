@@ -10,6 +10,7 @@ import CreateProductComponent from "./Components/Products/CreateProductComponent
 import ListProductsComponent from "./Components/Products/ListProductsComponent";
 import EditProductComponent from "./Components/Products/EditProductComponent";
 import { backendURL } from "./Global";
+import Announcements from "./Components/Products/Announcements";
 
 
 let App = () => {
@@ -22,6 +23,7 @@ let App = () => {
   useEffect(() => {
     checkLoginIsActive();
     checkUserAcces();
+    console.log(localStorage.getItem("id"))
   }, [])
 
   let checkUserAcces = async () => {
@@ -101,8 +103,9 @@ let App = () => {
           <Menu theme="dark" mode="horizontal" items={[
             { key: "menuIndex", label: <Link to="/">Index</Link> },
             { key: "menuCreateProduct", label: <Link to="/products/create">Sell</Link> },
-            { key: "menuProducts", label: <Link to="/products">Products</Link> },
+            { key: "menuProducts", label: <Link to={"/products/"+localStorage.getItem("id")}>My products</Link> },
             { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
+            { key: "menuAllAnnouncements", label: <Link to="/announcements" >All announcements</Link> },
           ]}>
           </Menu>
         }
@@ -123,11 +126,14 @@ let App = () => {
           <Route path="/products/create" element={
             <CreateProductComponent openNotification={openNotification} />
           }></Route>
-          <Route path="/products" element={
+          <Route path="/products/:id" element={
             <ListProductsComponent openNotification={openNotification} />
           }></Route>
           <Route path="/products/edit/:id" element={
             <EditProductComponent openNotification={openNotification} />
+          }></Route>
+          <Route path="/announcements" element={
+            <Announcements openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>

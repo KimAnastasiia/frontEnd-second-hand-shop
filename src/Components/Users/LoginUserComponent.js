@@ -30,6 +30,7 @@ let LoginUserComponent = (props) => {
             if ( jsonData.apiKey != null){
                 localStorage.setItem("apiKey",jsonData.apiKey)
                 localStorage.setItem("email",jsonData.email)
+                localStorage.setItem("id",jsonData.id)
                 setLogin(true)
                 openNotification("top","Login successfull", "success" )
                 navigate("/")

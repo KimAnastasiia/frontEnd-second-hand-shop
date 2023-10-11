@@ -3,18 +3,18 @@ import { backendURL } from "../../Global";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
 import { joinAllServerErrorMessages } from "../../Utils/UtilsValidations";
-
+import { useParams, useNavigate } from "react-router-dom";
 let ListProductsComponent = (props) => {
     let { openNotification } = props
 
     let [products, setProducts] = useState([])
-
+    const { id } = useParams();
     useEffect(() => {
         getProducts();
     }, [])
 
     let getProducts = async () => {
-        let response = await fetch(backendURL+"/products",
+        let response = await fetch(backendURL+"/products/allOfUser/"+id,
         {
             method: "GET",
             headers: {
