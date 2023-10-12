@@ -9,39 +9,35 @@ import {
     validateFormDataInputRequired,
     validateFormDataInputEmail
 } from "../../Utils/UtilsValidations"
-import { DatePicker, Select } from 'antd';
+import { DatePicker, Select, Radio } from 'antd';
+
 let CreaUserComponent = (props) => {
     let { openNotification } = props
-
     let requiredInForm = ["email", "password"]
     let [formData, setFormData] = useState({})
     let [formErrors, setFormErrors] = useState({})
 
     let navigate = useNavigate();
 
-    const onChange = (date, dateString) => {
-        console.log(date, dateString);
-    };
     const [countries, setCountries] = useState([]);
 
     useEffect(() => {
         getAllCountries()
-
     }, []);
 
-    let getAllCountries=async()=>{
+    let getAllCountries = async () => {
         let response = await fetch('https://restcountries.com/v3.1/all',
-        {
-            method: "GET",
+            {
+                method: "GET",
 
-        })
+            })
         if (response.ok) {
             let data = await response.json()
-            let temp = data 
-            temp=temp.map((country)=>{
-                return{
+            let temp = data
+            temp = temp.map((country) => {
+                return {
                     value: country.name.common,
-                    label: country.name.common,  
+                    label: country.name.common,
                 }
             })
             setCountries(temp)
@@ -71,30 +67,39 @@ let CreaUserComponent = (props) => {
         <Row align="middle" justify="center" style={{ minHeight: "70vh" }}>
             <Col>
                 <Card title="Create user" style={{ width: "500px" }}>
-          
+
                     <Form.Item label="" validateStatus={
-                            validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input placeholder="Name">
+                        validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
+                        <Input placeholder="Name" onChange={(input) => modifyStateProperty(formData, setFormData, "name", input.currentTarget.value)}>
 
                         </Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Surname"></Input>
+                        <Input placeholder="Surname" onChange={(input) => modifyStateProperty(formData, setFormData, "surname", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <DatePicker placeholder="Birthday" onChange={onChange} />
+                        <DatePicker placeholder="Birthday" onChange={(data,dateString)=>{ modifyStateProperty(formData, setFormData, "birthday", dateString)}} />
                     </Form.Item>
 
                     <Form.Item label="" validateStatus={
-                            validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input placeholder="DNI or Passport"></Input>
+                        validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
+                        <Radio.Group onChange={(e)=>{ modifyStateProperty(formData, setFormData, "documentIdentity", e.target.value)}}>
+                            <Radio value={"DNI"}>DNI</Radio>
+                            <Radio value={"Passport"}>Passport</Radio>
+                        </Radio.Group>
                     </Form.Item>
 
                     <Form.Item label="" validateStatus={
-                            validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
+                        validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
+                        <Input placeholder="Document Number"  onChange={(input) => modifyStateProperty(formData, setFormData, "documentNumber", input.currentTarget.value)} ></Input>
+                    </Form.Item>
+
+                    <Form.Item label="" validateStatus={
+                        validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
                         <Select
+                            onChange={(value) => modifyStateProperty(formData, setFormData, "country", value)}
                             showSearch
                             style={{
                                 width: 200,
@@ -110,11 +115,11 @@ let CreaUserComponent = (props) => {
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Adress"></Input>
+                        <Input placeholder="Adress" onChange={(input) => modifyStateProperty(formData, setFormData, "adress", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Postal code"></Input>
+                        <Input placeholder="Postal code" onChange={(input) => modifyStateProperty(formData, setFormData, "postalCode", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label="" validateStatus={
