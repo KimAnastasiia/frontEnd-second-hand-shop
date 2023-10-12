@@ -9,14 +9,14 @@ import {
     validateFormDataInputRequired,
     validateFormDataInputEmail
 } from "../../Utils/UtilsValidations"
-import { DatePicker, Select, Radio } from 'antd';
+import { DatePicker, Select, Radio, Upload } from 'antd';
 
 let CreaUserComponent = (props) => {
     let { openNotification } = props
     let requiredInForm = ["email", "password"]
     let [formData, setFormData] = useState({})
     let [formErrors, setFormErrors] = useState({})
-
+    const [myFile, setMyFile]=useState()
     let navigate = useNavigate();
 
     const [countries, setCountries] = useState([]);
@@ -51,6 +51,8 @@ let CreaUserComponent = (props) => {
         })
 
         if (response.ok) {
+            let data= await response.json()
+            uploadPhoto(data.userId)
             openNotification("top", "User created successfull", "success")
             navigate("/login")
         } else {
@@ -62,7 +64,26 @@ let CreaUserComponent = (props) => {
             openNotification("top", notificationMsg, "error")
         }
     }
+    let chageValueImage =(file)=>{
+        setMyFile(file)
+    }
 
+    let uploadPhoto = async (id) => {
+
+        const formDataPhotos = new FormData();
+
+        formDataPhotos.append('photo', myFile);
+        formDataPhotos.append('userId', id);
+        let response = await fetch(backendURL + "/users/photo", {
+            method: "POST",
+            body: formDataPhotos
+        })
+        if (response.ok) {
+            let data = await response.json()
+            console.log(data)
+        }
+        
+    }
     return (
         <Row align="middle" justify="center" style={{ minHeight: "70vh" }}>
             <Col>
@@ -94,6 +115,12 @@ let CreaUserComponent = (props) => {
                     <Form.Item label="" validateStatus={
                         validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
                         <Input placeholder="Document Number"  onChange={(input) => modifyStateProperty(formData, setFormData, "documentNumber", input.currentTarget.value)} ></Input>
+                    </Form.Item>
+
+                    <Form.Item label="">
+                            <Upload action={ (file) => {chageValueImage(file)} }  listType="picture-card">
+                                Upload
+                            </Upload>
                     </Form.Item>
 
                     <Form.Item label="" validateStatus={
