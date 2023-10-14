@@ -11,6 +11,7 @@ import ListProductsComponent from "./Components/Products/ListProductsComponent";
 import EditProductComponent from "./Components/Products/EditProductComponent";
 import { backendURL } from "./Global";
 import Announcements from "./Components/Products/Announcements";
+import ProfileUser from "./Components/Users/ProfileUser";
 
 
 let App = () => {
@@ -102,6 +103,7 @@ let App = () => {
         {login &&
           <Menu theme="dark" mode="horizontal" items={[
             { key: "menuIndex", label: <Link to="/">Index</Link> },
+            { key: "menuProfile", label: <Link to={"/profile/"+localStorage.getItem("email")}>Profile</Link> },
             { key: "menuCreateProduct", label: <Link to="/products/create">Sell</Link> },
             { key: "menuProducts", label: <Link to={"/products/"+localStorage.getItem("id")}>My products</Link> },
             { key: "menuAllAnnouncements", label: <Link to="/announcements" >All announcements</Link> },
@@ -134,6 +136,9 @@ let App = () => {
           }></Route>
           <Route path="/announcements" element={
             <Announcements openNotification={openNotification} />
+          }></Route>
+          <Route path="/profile/:email" element={
+            <ProfileUser openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>
