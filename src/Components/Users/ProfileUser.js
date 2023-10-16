@@ -1,7 +1,6 @@
-import { Card, Input, Button, Row, Col, Typography, Form } from "antd";
+import { Card, Input, Button, Row, Col, Typography, Form, Avatar,List, Skeleton, Upload, Space, DatePicker  } from "antd";
 import { useState, useEffect } from "react";
 import { backendURL } from "../../Global";
-import { Avatar, Upload, Space, DatePicker } from 'antd';
 import { UserOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -18,9 +17,12 @@ let ProfileUser = ({ openNotification }) => {
     const [makeCart, setMakeCart] = useState(false)
     const { email } = useParams();
     const [formData, setFormData] = useState({})
+    const [carts, setCarts] = useState([])
     const { RangePicker } = DatePicker;
+
     useEffect(() => {
         getUserInfo();
+        getUserCarts()
     }, [])
 
     let getUserInfo = async () => {
@@ -44,13 +46,35 @@ let ProfileUser = ({ openNotification }) => {
             openNotification("top", notificationMsg, "error")
         }
     }
+
+    let getUserCarts = async () => {
+
+        let response = await fetch(backendURL + "/userPayment/",
+            {
+                method: "GET",
+                headers: {
+                    "apikey": localStorage.getItem("apiKey")
+                },
+            });
+        if (response.ok) {
+            let jsonData = await response.json();
+            setCarts(jsonData.data)
+        } else {
+            let responseBody = await response.json();
+            let serverErrors = responseBody.errors;
+
+            setServerErrors(serverErrors, setFormErrors)
+            let notificationMsg = joinAllServerErrorMessages(serverErrors)
+            openNotification("top", notificationMsg, "error")
+        }
+    }
     let createCart = async () => {
 
         let response = await fetch(backendURL + "/userPayment/",
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json" ,
+                    "Content-Type": "application/json",
                     "apikey": localStorage.getItem("apiKey")
                 },
                 body: JSON.stringify(formData)
@@ -59,6 +83,7 @@ let ProfileUser = ({ openNotification }) => {
             setMakeCart(false)
         }
     }
+
     let uploadPhoto = async () => {
 
         const formDataPhotos = new FormData();
@@ -95,8 +120,25 @@ let ProfileUser = ({ openNotification }) => {
                         <Text>Adress: {user?.adress}</Text>
                         <Text>PostalCode: {user?.postalCode}</Text>
                     </Space>
-                    <Space direction="vertical">
+                    <Space direction="vertical" style={{ marginRight: 30 }}>
                         <Title level={2}>User payment data</Title>
+                        <List
+                            className="demo-loadmore-list"
+                            itemLayout="horizontal"
+                            dataSource={carts}
+                            renderItem={(item) => (
+                                <List.Item
+                                    actions={[<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">delete</a>]}
+                                >
+                                    <Skeleton avatar title={false} loading={item.loading} active>
+                                        <List.Item.Meta title={item.alias}/>
+                                    </Skeleton>
+                                </List.Item>
+                            )}
+                        />
+                    </Space>
+                    <Space direction="vertical">
+                        <Title level={2}>Add new carts</Title>
 
 
                         {makeCart == false &&
