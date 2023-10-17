@@ -1,4 +1,4 @@
-import { Card, Input, Button, Row, Col, Typography, Form, Avatar,List, Skeleton, Upload, Space, DatePicker  } from "antd";
+import { Card, Input, Button, Row, Col, Typography, Form, Avatar, List, Skeleton, Upload, Space, DatePicker } from "antd";
 import { useState, useEffect } from "react";
 import { backendURL } from "../../Global";
 import { UserOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
@@ -19,7 +19,7 @@ let ProfileUser = ({ openNotification }) => {
     const [formData, setFormData] = useState({})
     const [carts, setCarts] = useState([])
     const { RangePicker } = DatePicker;
-    let navigate =useNavigate()
+    let navigate = useNavigate()
     useEffect(() => {
         getUserInfo();
         getUserCarts()
@@ -67,7 +67,24 @@ let ProfileUser = ({ openNotification }) => {
             let notificationMsg = joinAllServerErrorMessages(serverErrors)
             openNotification("top", notificationMsg, "error")
         }
+        getUserCarts()
     }
+    const handleDelete = async (id) => {
+
+        let response = await fetch(backendURL + `/userPayment/`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type" : "application/json ",
+                "apikey": localStorage.getItem("apiKey")
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        })
+        if (response.ok) {
+            openNotification("top", "Deleted", "success")
+        }
+    };
     let createCart = async () => {
 
         let response = await fetch(backendURL + "/userPayment/",
@@ -110,10 +127,10 @@ let ProfileUser = ({ openNotification }) => {
                             dataSource={carts}
                             renderItem={(item) => (
                                 <List.Item
-                                    actions={[<a key="list-loadmore-more">delete</a>]}
+                                    actions={[<Button onClick={() => {handleDelete(item.id) }}>delete</Button>]}
                                 >
                                     <Skeleton avatar title={false} loading={item.loading} active>
-                                        <List.Item.Meta title={item.alias}/>
+                                        <List.Item.Meta title={item.alias} />
                                     </Skeleton>
                                 </List.Item>
                             )}
@@ -141,7 +158,7 @@ let ProfileUser = ({ openNotification }) => {
                                 <Button onClick={() => { createCart() }} style={{ width: "100%" }} type="primary">Add</Button>
                             </>
                         }
-                        <Button onClick={()=>{navigate(`/profile/${email}/edit`)}} style={{width:"100%"} }>Edit profile</Button>
+                        <Button onClick={() => { navigate(`/profile/${email}/edit`) }} style={{ width: "100%" }}>Edit profile</Button>
                     </Space>
 
 
