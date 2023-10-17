@@ -19,7 +19,7 @@ let ProfileUser = ({ openNotification }) => {
     const [formData, setFormData] = useState({})
     const [carts, setCarts] = useState([])
     const { RangePicker } = DatePicker;
-
+    let navigate =useNavigate()
     useEffect(() => {
         getUserInfo();
         getUserCarts()
@@ -82,33 +82,15 @@ let ProfileUser = ({ openNotification }) => {
         if (response.ok) {
             setMakeCart(false)
         }
+        getUserCarts()
     }
 
-    let uploadPhoto = async () => {
-
-        const formDataPhotos = new FormData();
-
-        formDataPhotos.append('photo', myFile);
-        formDataPhotos.append('userId', user.id);
-        let response = await fetch(backendURL + "/users/photo", {
-            method: "POST",
-            body: formDataPhotos
-        })
-        if (response.ok) {
-            let data = await response.json()
-            console.log(data)
-        }
-
-    }
     return (
         <Row align="middle" justify="center">
             <Col>
                 <Card title="Profile" style={{ minWidth: "700px" }}>
                     <Space direction="vertical" style={{ marginRight: 30 }}>
                         <Avatar src={backendURL + "/images/" + localStorage.getItem("id") + "user.png"} size={150} icon={<UserOutlined />} />
-                        <Upload >
-                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                        </Upload>
                     </Space>
                     <Space direction="vertical" style={{ marginRight: 30 }}>
                         <Title level={2}>User data</Title>
@@ -117,7 +99,7 @@ let ProfileUser = ({ openNotification }) => {
                         <Text>Surname: {user?.surname}</Text>
                         <Text>Birthday: {user?.birthday}</Text>
                         <Text>Country: {user?.country}</Text>
-                        <Text>Adress: {user?.adress}</Text>
+                        <Text>Address: {user?.address}</Text>
                         <Text>PostalCode: {user?.postalCode}</Text>
                     </Space>
                     <Space direction="vertical" style={{ marginRight: 30 }}>
@@ -128,7 +110,7 @@ let ProfileUser = ({ openNotification }) => {
                             dataSource={carts}
                             renderItem={(item) => (
                                 <List.Item
-                                    actions={[<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">delete</a>]}
+                                    actions={[<a key="list-loadmore-more">delete</a>]}
                                 >
                                     <Skeleton avatar title={false} loading={item.loading} active>
                                         <List.Item.Meta title={item.alias}/>
@@ -159,7 +141,7 @@ let ProfileUser = ({ openNotification }) => {
                                 <Button onClick={() => { createCart() }} style={{ width: "100%" }} type="primary">Add</Button>
                             </>
                         }
-
+                        <Button onClick={()=>{navigate(`/profile/${email}/edit`)}} style={{width:"100%"} }>Edit profile</Button>
                     </Space>
 
 

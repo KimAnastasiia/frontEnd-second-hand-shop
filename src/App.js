@@ -12,6 +12,7 @@ import EditProductComponent from "./Components/Products/EditProductComponent";
 import { backendURL } from "./Global";
 import Announcements from "./Components/Products/Announcements";
 import ProfileUser from "./Components/Users/ProfileUser";
+import EditUserInfo from "./Components/Users/EditUserInfo";
 
 
 let App = () => {
@@ -139,6 +140,9 @@ let App = () => {
           }></Route>
           <Route path="/profile/:email" element={
             <ProfileUser openNotification={openNotification} />
+          }></Route>
+          <Route path="profile/:email/edit" element={
+            <EditUserInfo openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>

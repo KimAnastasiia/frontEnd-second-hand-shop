@@ -1,7 +1,8 @@
 import { Card, Input, Button, Row, Col, Typography, Form } from "antd";
 import { useState, useEffect } from "react";
 import { backendURL } from "../../Global";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import moment from 'moment';
 import {
     allowSubmitForm,
     modifyStateProperty,
@@ -11,20 +12,41 @@ import {
 } from "../../Utils/UtilsValidations"
 import { DatePicker, Select, Radio, Upload } from 'antd';
 
-let CreaUserComponent = (props) => {
-    let { openNotification } = props
-    let requiredInForm = ["email", "password"]
-    let [formData, setFormData] = useState({})
-    let [formErrors, setFormErrors] = useState({})
+let EditUserInfo = ({openNotification}) => {
+   
+
+    const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [myFile, setMyFile]=useState()
     let navigate = useNavigate();
-
     const [countries, setCountries] = useState([]);
-
+    const { email } = useParams();
     useEffect(() => {
         getAllCountries()
+        getUserInfo()
     }, []);
 
+    let getUserInfo = async () => {
+
+        let response = await fetch(backendURL + "/userPrivate/" + email,
+            {
+                method: "GET",
+                headers: {
+                    "apikey": localStorage.getItem("apiKey")
+                },
+            });
+        if (response.ok) {
+            let jsonData = await response.json();
+            setFormData(jsonData[0])
+        } else {
+            let responseBody = await response.json();
+            let serverErrors = responseBody.errors;
+
+            setServerErrors(serverErrors, setFormErrors)
+            let notificationMsg = joinAllServerErrorMessages(serverErrors)
+            openNotification("top", notificationMsg, "error")
+        }
+    }
     let getAllCountries = async () => {
         let response = await fetch('https://restcountries.com/v3.1/all',
             {
@@ -43,31 +65,35 @@ let CreaUserComponent = (props) => {
             setCountries(temp)
         }
     }
-    let clickCreate = async () => {
-        let response = await fetch(backendURL + "/users", {
-            method: "POST",
-            headers: { "Content-Type": "application/json " },
-            body: JSON.stringify(formData)
-        })
 
-        if (response.ok) {
-            let data= await response.json()
-            uploadPhoto(data.userId)
-            openNotification("top", "User created successfull", "success")
-            navigate("/login")
-        } else {
-            let responseBody = await response.json();
-            let serverErrors = responseBody.errors;
-
-            setServerErrors(serverErrors, setFormErrors)
-            let notificationMsg = joinAllServerErrorMessages(serverErrors)
-            openNotification("top", notificationMsg, "error")
-        }
-    }
     let chageValueImage =(file)=>{
         setMyFile(file)
     }
+    
+    let edit = async () => {
 
+        let response = await fetch(backendURL+"/userPrivate/",
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type" : "application/json ",
+                "apikey": localStorage.getItem("apiKey")
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if ( response.ok ){
+            let jsonData = await response.json();
+            openNotification("top","Successfully", "success" )
+
+        } else {
+            let responseBody = await response.json();
+            let serverErrors = responseBody.errors; 
+            let notificationMsg = joinAllServerErrorMessages(serverErrors)
+            openNotification("top",notificationMsg, "error" )
+        }
+      
+    }
     let uploadPhoto = async (id) => {
 
         const formDataPhotos = new FormData();
@@ -87,26 +113,26 @@ let CreaUserComponent = (props) => {
     return (
         <Row align="middle" justify="center" style={{ minHeight: "70vh" }}>
             <Col>
-                <Card title="Create user" style={{ width: "500px" }}>
+                <Card title="Edit data" style={{ width: "500px" }}>
 
                     <Form.Item label="" validateStatus={
                         validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input placeholder="Name" onChange={(input) => modifyStateProperty(formData, setFormData, "name", input.currentTarget.value)}>
+                        <Input value={formData?.name} placeholder="Name" onChange={(input) => modifyStateProperty(formData, setFormData, "name", input.currentTarget.value)}>
 
                         </Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Surname" onChange={(input) => modifyStateProperty(formData, setFormData, "surname", input.currentTarget.value)}></Input>
+                        <Input value={formData?.surname}  placeholder="Surname" onChange={(input) => modifyStateProperty(formData, setFormData, "surname", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <DatePicker placeholder="Birthday" onChange={(data,dateString)=>{ modifyStateProperty(formData, setFormData, "birthday", dateString)}} />
+                        <DatePicker defaultValue={moment(formData.birthday, "YYYY-MM-DD")}  format='YYYY-MM-DD'  placeholder="Birthday"  onChange={(data,dateString)=>{ modifyStateProperty(formData, setFormData, "birthday", dateString)}} />
                     </Form.Item>
 
                     <Form.Item label="" validateStatus={
                         validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Radio.Group onChange={(e)=>{ modifyStateProperty(formData, setFormData, "documentIdentity", e.target.value)}}>
+                        <Radio.Group value={formData?.documentIdentity}  onChange={(e)=>{ modifyStateProperty(formData, setFormData, "documentIdentity", e.target.value)}}>
                             <Radio value={"DNI"}>DNI</Radio>
                             <Radio value={"Passport"}>Passport</Radio>
                         </Radio.Group>
@@ -114,7 +140,7 @@ let CreaUserComponent = (props) => {
 
                     <Form.Item label="" validateStatus={
                         validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input placeholder="Document Number"  onChange={(input) => modifyStateProperty(formData, setFormData, "documentNumber", input.currentTarget.value)} ></Input>
+                        <Input value={formData?.documentNumber}  placeholder="Document Number"  onChange={(input) => modifyStateProperty(formData, setFormData, "documentNumber", input.currentTarget.value)} ></Input>
                     </Form.Item>
 
                     <Form.Item label="">
@@ -131,6 +157,7 @@ let CreaUserComponent = (props) => {
                             style={{
                                 width: 200,
                             }}
+                            value={formData?.country}
                             placeholder="Country"
                             optionFilterProp="children"
                             filterOption={(input, option) => (option?.label.toLowerCase() ?? '').includes(input)}
@@ -142,35 +169,25 @@ let CreaUserComponent = (props) => {
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Address" onChange={(input) => modifyStateProperty(formData, setFormData, "address", input.currentTarget.value)}></Input>
+                        <Input value={formData?.address} placeholder="Address" onChange={(input) => modifyStateProperty(formData, setFormData, "address", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label="" >
-                        <Input placeholder="Postal code" onChange={(input) => modifyStateProperty(formData, setFormData, "postalCode", input.currentTarget.value)}></Input>
-                    </Form.Item>
-
-                    <Form.Item label="" validateStatus={
-                        validateFormDataInputEmail(formData, "email", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input onChange={(input) => modifyStateProperty(formData, setFormData, "email", input.currentTarget.value)}
-                            size="large" type="text" placeholder="your email"></Input>
-
-
-                        {formErrors?.email?.msg && <Typography.Text type="danger"> {formErrors?.email?.msg} </Typography.Text>}
+                        <Input value={formData?.postalCode} placeholder="Postal code" onChange={(input) => modifyStateProperty(formData, setFormData, "postalCode", input.currentTarget.value)}></Input>
                     </Form.Item>
 
                     <Form.Item label=""
                         validateStatus={
                             validateFormDataInputRequired(formData, "password", formErrors, setFormErrors) ? "success" : "error"}>
-                        <Input onChange={(input) => modifyStateProperty(formData, setFormData, "password", input.currentTarget.value)}
+                        <Input value={formData?.password} onChange={(input) => modifyStateProperty(formData, setFormData, "password", input.currentTarget.value)}
                             size="large" type="text" placeholder="your password"></Input>
 
                         {formErrors?.password?.msg && <Typography.Text type="danger"> {formErrors?.password?.msg} </Typography.Text>}
                     </Form.Item>
 
-                    {allowSubmitForm(formData, formErrors, requiredInForm) ?
-                        <Button type="primary" onClick={clickCreate} block >Create account</Button> :
-                        <Button type="primary" onClick={clickCreate} block disabled>Create account</Button>
-                    }
+                    
+                <Button type="primary" onClick={()=>{edit()}} block >Edit account</Button>
+                       
 
                 </Card>
             </Col>
@@ -178,4 +195,4 @@ let CreaUserComponent = (props) => {
     )
 }
 
-export default CreaUserComponent;
+export default EditUserInfo;
