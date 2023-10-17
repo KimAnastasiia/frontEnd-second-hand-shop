@@ -20,6 +20,7 @@ let ProfileUser = ({ openNotification }) => {
     const [carts, setCarts] = useState([])
     const { RangePicker } = DatePicker;
     let navigate = useNavigate()
+
     useEffect(() => {
         getUserInfo();
         getUserCarts()
@@ -67,7 +68,7 @@ let ProfileUser = ({ openNotification }) => {
             let notificationMsg = joinAllServerErrorMessages(serverErrors)
             openNotification("top", notificationMsg, "error")
         }
-        getUserCarts()
+        
     }
     const handleDelete = async (id) => {
 
