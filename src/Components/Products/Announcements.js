@@ -62,7 +62,7 @@ let Announcements = ({ openNotification }) => {
         getProducts();
     }
     return (
-        <Card title="Card title">
+        <Card title="All products">
 
 
 
