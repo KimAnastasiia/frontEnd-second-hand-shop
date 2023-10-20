@@ -2,47 +2,73 @@ import { useEffect, useState } from "react";
 import { backendURL } from "../../Global";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
-import { joinAllServerErrorMessages } from "../../Utils/UtilsValidations";
-
+import {
+    allowSubmitForm,
+    modifyStateProperty,
+    joinAllServerErrorMessages, setServerErrors,
+    validateFormDataInputRequired
+} from "../../Utils/UtilsValidations"
 import { useParams, useNavigate } from "react-router-dom";
 let ListPurchases = ({ openNotification }) => {
  
 
     let [products, setProducts] = useState([])
+    const [formErrors, setFormErrors] = useState({})
 
+    useEffect(() => {
+        getPurchases()
+    }, [])
+
+    let getPurchases = async () => {
+
+        let response = await fetch(backendURL + "/transactions/",
+            {
+                method: "GET",
+                headers: {
+                    "apikey": localStorage.getItem("apiKey")
+                },
+            });
+        if (response.ok) {
+            let jsonData = await response.json();
+            setProducts(jsonData)
+        } else {
+            let responseBody = await response.json();
+            let serverErrors = responseBody.errors;
+
+            setServerErrors(serverErrors, setFormErrors)
+            let notificationMsg = joinAllServerErrorMessages(serverErrors)
+            openNotification("top", notificationMsg, "error")
+        }
+
+    }
     let columns = [
-        {
-            title: "Id",
-            dataIndex: "id",
-        },
         {
             title: "Seller Id",
             dataIndex: "sellerId"
         },
         {
-            title: "Title",
-            dataIndex: "title"
+            title: "Seller Country",
+            dataIndex: "sellerCountry"
         },
         {
-            title: "Description",
-            dataIndex: "description",
+            title: "Seller Address",
+            dataIndex: "sellerAddress",
+        },
+        {
+            title: "Seller PostCode",
+            dataIndex: "sellerPostCode",
+        },
+        {
+            title: "Product Id",
+            dataIndex: "productId",
         },
         {
             title: "Price (€)",
             dataIndex: "price",
         },
         {
-            title: "Date",
-            dataIndex: "date",
-        },
-        {
-            title: "Buyer",
-            dataIndex: "buyerId",
-        },
-        {
-            title: "Actions",
-            dataIndex: "id",
-            render: (id) => <Link to={"/products/edit/"+id}>Edit</Link>
+            title: "Seller PaymentName",
+            dataIndex: "sellerPaymentName",
         },
     ]
 
