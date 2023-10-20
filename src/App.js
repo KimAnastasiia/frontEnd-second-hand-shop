@@ -14,6 +14,7 @@ import Announcements from "./Components/Products/Announcements";
 import ProfileUser from "./Components/Users/ProfileUser";
 import EditUserInfo from "./Components/Users/EditUserInfo";
 import ListPurchases from "./Components/Products/ListPurchases";
+import MyFavoritesComponent from "./Components/Products/MyFavoritesComponent";
 
 
 let App = () => {
@@ -109,6 +110,7 @@ let App = () => {
             { key: "menuProducts", label: <Link to={"/products/"+localStorage.getItem("id")}>My products</Link> },
             { key: "menuAllAnnouncements", label: <Link to="/announcements" >All announcements</Link> },
             { key: "menuListPurchases", label: <Link to="/myPurchases" >All Purchases</Link> },
+            { key: "menuListFavorites", label: <Link to="/favorites" >List of favorites</Link> },
             { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
           ]}>
           </Menu>
@@ -145,8 +147,11 @@ let App = () => {
           <Route path="profile/:email/edit" element={
             <EditUserInfo openNotification={openNotification} />
           }></Route>
-           <Route path="/myPurchases" element={
+          <Route path="/myPurchases" element={
             <ListPurchases openNotification={openNotification} />
+          }></Route>
+          <Route path="/favorites" element={
+            <MyFavoritesComponent openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>
