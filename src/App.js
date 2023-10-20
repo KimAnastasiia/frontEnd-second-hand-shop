@@ -13,6 +13,7 @@ import { backendURL } from "./Global";
 import Announcements from "./Components/Products/Announcements";
 import ProfileUser from "./Components/Users/ProfileUser";
 import EditUserInfo from "./Components/Users/EditUserInfo";
+import ListPurchases from "./Components/Products/ListPurchases";
 
 
 let App = () => {
@@ -25,7 +26,6 @@ let App = () => {
   useEffect(() => {
     checkLoginIsActive();
     checkUserAcces();
-    console.log(localStorage.getItem("id"))
   }, [])
 
   let checkUserAcces = async () => {
@@ -108,6 +108,7 @@ let App = () => {
             { key: "menuCreateProduct", label: <Link to="/products/create">Sell</Link> },
             { key: "menuProducts", label: <Link to={"/products/"+localStorage.getItem("id")}>My products</Link> },
             { key: "menuAllAnnouncements", label: <Link to="/announcements" >All announcements</Link> },
+            { key: "menuListPurchases", label: <Link to="/myPurchases" >All Purchases</Link> },
             { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
           ]}>
           </Menu>
@@ -143,6 +144,9 @@ let App = () => {
           }></Route>
           <Route path="profile/:email/edit" element={
             <EditUserInfo openNotification={openNotification} />
+          }></Route>
+           <Route path="/myPurchases" element={
+            <ListPurchases openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>

@@ -11,7 +11,6 @@ import {
 } from "../../Utils/UtilsValidations"
 let ProfileUser = ({ openNotification }) => {
     const { Text, Title } = Typography;
-    const [myFile, setMyFile] = useState()
     const [user, setUser] = useState()
     const [formErrors, setFormErrors] = useState({})
     const [makeCart, setMakeCart] = useState(false)
