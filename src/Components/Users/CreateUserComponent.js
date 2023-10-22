@@ -52,7 +52,7 @@ let CreaUserComponent = (props) => {
 
         if (response.ok) {
             let data= await response.json()
-            uploadPhoto(data.userId)
+            uploadPhoto(data.apiKey.apiKey)
             openNotification("top", "User created successfull", "success")
             navigate("/login")
         } else {
@@ -68,12 +68,12 @@ let CreaUserComponent = (props) => {
         setMyFile(file)
     }
 
-    let uploadPhoto = async (id) => {
+    let uploadPhoto = async (apiKey) => {
 
         const formDataPhotos = new FormData();
 
         formDataPhotos.append('photo', myFile);
-        formDataPhotos.append('userId', id);
+        formDataPhotos.append('apiKey', apiKey);
         let response = await fetch(backendURL + "/users/photo", {
             method: "POST",
             body: formDataPhotos
