@@ -187,7 +187,13 @@ let Announcements = ({ openNotification }) => {
             {products.map((product) =>
 
                 <Card style={{ marginTop: 16, marginLeft: 150, marginRight: 150 }} type="inner" title={product.title + " " + product.price + "€"} extra={[ 
-                <Button onClick={()=>{navigate(`/seller/${product.sellerId}`)}}>{product.name}</Button>,
+                <Button onClick={()=>{
+                    if(product.sellerId==localStorage.getItem("id")){
+                        navigate(`/profile/`+localStorage.getItem("email"))
+                    }else{
+                        navigate(`/seller/${product.sellerId}`)
+                    }
+                }}>{product.name}</Button>,
                 <HeartIcon
                     onClick={()=>{deleteFavorites(product.id)}}
                     style={{
