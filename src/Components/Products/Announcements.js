@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { backendURL } from "../../Global";
 import { Card, Image, Modal, Button, Input, Radio, Space } from 'antd';
-import { Link } from "react-router-dom";
+import { Link, Routes, Route, useNavigate, useLocation  } from "react-router-dom";
 import Icon, { HomeOutlined } from '@ant-design/icons';
 import {
     allowSubmitForm,
@@ -11,7 +11,7 @@ import {
 } from "../../Utils/UtilsValidations"
 import {HeartOutlined} from '@ant-design/icons';
 let Announcements = ({ openNotification }) => {
-
+    let navigate = useNavigate()
     let [products, setProducts] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -186,7 +186,9 @@ let Announcements = ({ openNotification }) => {
 
             {products.map((product) =>
 
-                <Card style={{ marginTop: 16, marginLeft: 150, marginRight: 150 }} type="inner" title={product.title + " " + product.price + "€"} extra={[ <HeartIcon
+                <Card style={{ marginTop: 16, marginLeft: 150, marginRight: 150 }} type="inner" title={product.title + " " + product.price + "€"} extra={[ 
+                <Button onClick={()=>{navigate(`/seller/${product.sellerId}`)}}>{product.name}</Button>,
+                <HeartIcon
                     onClick={()=>{deleteFavorites(product.id)}}
                     style={{
                       color: 'hotpink'

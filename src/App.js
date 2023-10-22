@@ -15,6 +15,7 @@ import ProfileUser from "./Components/Users/ProfileUser";
 import EditUserInfo from "./Components/Users/EditUserInfo";
 import ListPurchases from "./Components/Products/ListPurchases";
 import MyFavoritesComponent from "./Components/Products/MyFavoritesComponent";
+import SellersProfiles from "./Components/Users/SellersProfiles";
 
 
 let App = () => {
@@ -152,6 +153,9 @@ let App = () => {
           }></Route>
           <Route path="/favorites" element={
             <MyFavoritesComponent openNotification={openNotification} />
+          }></Route>
+          <Route path="/seller/:sellerId" element={
+            <SellersProfiles openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>

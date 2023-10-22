@@ -21,7 +21,7 @@ let ListPurchases = ({ openNotification }) => {
 
     let getPurchases = async () => {
 
-        let response = await fetch(backendURL + "/transactions/",
+        let response = await fetch(backendURL + "/transactions?buyerId="+localStorage.getItem("id"),
             {
                 method: "GET",
                 headers: {
