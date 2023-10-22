@@ -68,7 +68,7 @@ let ListPurchases = ({ openNotification }) => {
         },
         {
             title: "Seller PaymentName",
-            dataIndex: "sellerPaymentName",
+            dataIndex: "buyerPaymentName",
         },
     ]
 

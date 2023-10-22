@@ -113,7 +113,7 @@ let Announcements = ({ openNotification }) => {
         addToTransactions()  
     }
     let addToTransactions = async () => {
-        currentProduct.current.sellerPaymentName=selectedCreditCard
+        currentProduct.current.buyerPaymentName=selectedCreditCard
         let response = await fetch(backendURL + "/transactions", {
             method: "POST",
             headers: {
