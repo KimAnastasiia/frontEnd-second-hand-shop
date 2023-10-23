@@ -85,7 +85,7 @@ let EditUserInfo = ({openNotification}) => {
         if ( response.ok ){
             let jsonData = await response.json();
             openNotification("top","Successfully", "success" )
-            uploadPhoto()
+            editPhoto()
         } else {
             let responseBody = await response.json();
             let serverErrors = responseBody.errors; 
@@ -94,15 +94,17 @@ let EditUserInfo = ({openNotification}) => {
         }
         
     }
-    let uploadPhoto = async () => {
+    let editPhoto = async () => {
 
         const formDataPhotos = new FormData();
 
         formDataPhotos.append('photo', myFile);
-        formDataPhotos.append('userId', formData.id);
-        let response = await fetch(backendURL + "/users/photo", {
-            method: "POST",
-            body: formDataPhotos
+        let response = await fetch(backendURL + "/userPrivate/photo", {
+            method: "PUT",
+            headers: {
+                "apikey": localStorage.getItem("apiKey")
+            },
+            body:formDataPhotos
         })
         if (response.ok) {
             let data = await response.json()
