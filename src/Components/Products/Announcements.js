@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { backendURL } from "../../Global";
-import { Card, Image, Modal, Button, Input, Radio, Space } from 'antd';
+import { Card, Image, Modal, Button, Radio, Space, Input } from 'antd';
 import { Link, Routes, Route, useNavigate, useLocation  } from "react-router-dom";
 import Icon, { HomeOutlined } from '@ant-design/icons';
 import {
@@ -17,7 +17,9 @@ let Announcements = ({ openNotification }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [carts, setCarts] = useState([])
     const [selectedCreditCard, setSelectedCreditCard] = useState("");
+    let [search, setSearch] = useState("")
     let currentProduct = useRef()
+    const { Search } = Input;
     useEffect(() => {
         getProducts();
         getUserCarts()
@@ -182,9 +184,20 @@ let Announcements = ({ openNotification }) => {
         }
     };
     return (
-        <Card title="All products">
+        <Card title="All products" extra={
+        
+            <Search
+                placeholder="input search text"
+                onChange={(e)=>{setSearch(e.target.value)}}
+                style={{
+                    width: 200,
+                }}
+            />
+        }>
 
-            {products.map((product) =>
+            {products.filter((product)=>{
+                return product.title.toLowerCase().includes(search)
+            }).map((product) =>
 
                 <Card style={{ marginTop: 16, marginLeft: 150, marginRight: 150 }} type="inner" title={product.title + " " + product.price + "€"} extra={[ 
                 <Button onClick={()=>{
