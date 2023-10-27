@@ -52,7 +52,9 @@ let CreateProductComponent = (props) => {
         if (response.ok) {
             openNotification("top", "Product created successfull", "success")
             let data = await response.json()
-            uploadPhotos(data.productId)
+            if(myFile){
+                uploadPhotos(data.productId)
+            }
             navigate("/products")
         } else {
             let responseBody = await response.json();
